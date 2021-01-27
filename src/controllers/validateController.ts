@@ -1,17 +1,145 @@
-import type { Request } from 'express';
-import type { TypedResponse } from '../types';
+import type { TypedRequest, TypedResponse } from '../types';
 import { Router } from 'express';
 import validate from '../utils/validate';
-import solve from '../utils/solve';
+import { conditions, splitMax } from '../utils/util';
 
 const router = Router();
 
-router.post('/', validate, solve, (_: Request, res: TypedResponse) =>
-  res.json({
-    message: 'My Rule-Validation API',
-    status: 'success',
-    data: {},
-  })
-);
+router.post('/', validate, (req: TypedRequest, res: TypedResponse) => {
+  const data = req.body.data;
+  const { field, condition, condition_value } = req.body.rule;
+  const nestedFields = splitMax(field);
+
+  if (data instanceof Array) {
+    if (nestedFields.length > 1)
+      return res.status(400).json({
+        message: `field ${field[0]} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+
+    if (!data.includes(nestedFields[0]))
+      return res.status(400).json({
+        message: `field ${field} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+
+    if (!conditions[condition](field, condition_value)) {
+      return res.status(400).json({
+        message: `field ${field} failed validation.`,
+        status: 'error',
+        data: {
+          validation: {
+            error: true,
+            field: field,
+            field_value: '',
+            condition: condition,
+            condition_value: condition_value,
+          },
+        },
+      });
+    }
+
+    return res.json({
+      message: `field ${field} successfully validated.`,
+      status: 'success',
+      data: {
+        validation: {
+          error: false,
+          field: field,
+          field_value: '',
+          condition: condition,
+          condition_value: condition_value,
+        },
+      },
+    });
+  } else if (typeof data === 'object') {
+    if (!data[nestedFields[0]])
+      return res.status(400).json({
+        message: `field ${nestedFields[0]} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+
+    if (nestedFields.length > 1 && !data[nestedFields[0]][nestedFields[1]])
+      return res.status(400).json({
+        message: `field ${field} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+
+    if (
+      condition === 'contains' ||
+      !conditions[condition](field, condition_value)
+    ) {
+      return res.status(400).json({
+        message: `field ${field} failed validation.`,
+        status: 'error',
+        data: {
+          validation: {
+            error: true,
+            field: field,
+            field_value: '',
+            condition: condition,
+            condition_value: condition_value,
+          },
+        },
+      });
+    }
+
+    return res.json({
+      message: `field ${field} successfully validated.`,
+      status: 'success',
+      data: {
+        validation: {
+          error: false,
+          field: field,
+          field_value: '',
+          condition: condition,
+          condition_value: condition_value,
+        },
+      },
+    });
+  } else {
+    if (nestedFields.length > 1) {
+      return res.status(400).json({
+        message: `field ${nestedFields[0]} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+    }
+
+    if (!conditions[condition](field, condition_value)) {
+      return res.status(400).json({
+        message: `field ${field} failed validation.`,
+        status: 'error',
+        data: {
+          validation: {
+            error: true,
+            field: field,
+            field_value: '',
+            condition: condition,
+            condition_value: condition_value,
+          },
+        },
+      });
+    }
+
+    return res.json({
+      message: `field ${field} successfully validated.`,
+      status: 'success',
+      data: {
+        validation: {
+          error: false,
+          field: field,
+          field_value: '',
+          condition: condition,
+          condition_value: condition_value,
+        },
+      },
+    });
+  }
+});
 
 export default router;
