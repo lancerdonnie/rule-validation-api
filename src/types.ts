@@ -12,8 +12,17 @@ export type TypedResponse = Omit<Response, 'json'> & {
 
 export interface TypedRequest extends Request {
   body: {
-    rule: {};
-    data: {};
+    rule: {
+      field: string;
+      condition: 'eq' | 'neq' | 'gt' | 'gte' | 'contains';
+      condition_value: string;
+    };
+    data:
+      | {
+          [key: string]: any;
+        }
+      | any[]
+      | string;
   };
 }
 

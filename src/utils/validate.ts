@@ -9,6 +9,10 @@ const ruleSchema = Joi.object({
     .required(),
   condition_value: Joi.string().required(),
 }).required();
+// .error((err) => {
+//   console.log(err[0]);
+//   return new Error('blabla');
+// });
 
 const requestSchema = Joi.object({
   rule: ruleSchema,
@@ -20,12 +24,29 @@ const requestSchema = Joi.object({
 });
 
 export default (req: TypedRequest, res: TypedResponse, next: NextFunction) => {
-  const { error } = requestSchema.validate(req.body);
+  // const { error } = requestSchema.validate(req.body);
 
-  if (error) {
+  // if (error) {
+  //   console.log(error.details[0]);
+  //   return res.status(400).json({
+  //     data: null,
+  //     message: error.message,
+  //     status: 'error',
+  //   });
+  // }
+
+  const body = req.body;
+  if (!body.data) {
     return res.status(400).json({
       data: null,
-      message: error.message,
+      message: 'data is required.',
+      status: 'error',
+    });
+  }
+  if (!body.rule) {
+    return res.status(400).json({
+      data: null,
+      message: 'rule is required.',
       status: 'error',
     });
   }
