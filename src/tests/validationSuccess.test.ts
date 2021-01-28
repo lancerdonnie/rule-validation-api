@@ -20,6 +20,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('string validation success 2', async (done) => {
     await agent
       .post('/validate-rule')
@@ -39,6 +40,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('string validation success 3', async (done) => {
     await agent
       .post('/validate-rule')
@@ -58,6 +60,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('Array validation success 1', async (done) => {
     await agent
       .post('/validate-rule')
@@ -77,6 +80,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('Array validation success 2', async (done) => {
     await agent
       .post('/validate-rule')
@@ -96,6 +100,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('Object validation success 1', async (done) => {
     await agent
       .post('/validate-rule')
@@ -115,6 +120,7 @@ describe('Validation-test success', () => {
       });
     done();
   });
+
   test('Object validation success 2', async (done) => {
     await agent
       .post('/validate-rule')
@@ -124,6 +130,36 @@ describe('Validation-test success', () => {
           field: 'b.c',
           condition: 'eq',
           condition_value: true,
+        },
+      })
+      .expect(200)
+      .then((res) => {
+        expect(res.body.message).toContain('successfully validated.');
+        expect(res.body.status).toBe('success');
+        expect(res.body.data.validation.error).toBe(false);
+      });
+    done();
+  });
+
+  test('Object validation success 3', async (done) => {
+    await agent
+      .post('/validate-rule')
+      .send({
+        rule: {
+          field: 'missions.count',
+          condition: 'gte',
+          condition_value: 30,
+        },
+        data: {
+          name: 'James Holden',
+          crew: 'Rocinante',
+          age: 34,
+          position: 'Captain',
+          missions: {
+            count: 45,
+            successful: 44,
+            failed: 1,
+          },
         },
       })
       .expect(200)

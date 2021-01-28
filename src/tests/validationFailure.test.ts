@@ -20,6 +20,7 @@ describe('Validation-test failed', () => {
       });
     done();
   });
+
   test('string validation fail 2', async (done) => {
     await agent
       .post('/validate-rule')
@@ -39,6 +40,27 @@ describe('Validation-test failed', () => {
       });
     done();
   });
+
+  test('string validation fail 3', async (done) => {
+    await agent
+      .post('/validate-rule')
+      .send({
+        rule: {
+          field: '0',
+          condition: 'eq',
+          condition_value: 'a',
+        },
+        data: 'damien-marley',
+      })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.message).toContain('failed validation.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data.validation.error).toBe(true);
+      });
+    done();
+  });
+
   test('Array validation fail 1', async (done) => {
     await agent
       .post('/validate-rule')
@@ -58,6 +80,7 @@ describe('Validation-test failed', () => {
       });
     done();
   });
+
   test('Object validation fail 1', async (done) => {
     await agent
       .post('/validate-rule')
@@ -77,6 +100,7 @@ describe('Validation-test failed', () => {
       });
     done();
   });
+
   test('Object validation fail 2', async (done) => {
     await agent
       .post('/validate-rule')

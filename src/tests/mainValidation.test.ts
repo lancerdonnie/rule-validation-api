@@ -148,4 +148,24 @@ describe('Validation errors', () => {
       });
     done();
   });
+
+  test('data missing 4', async (done) => {
+    await agent
+      .post('/validate-rule')
+      .send({
+        rule: {
+          field: '5',
+          condition: 'contains',
+          condition_value: 'rocinante',
+        },
+        data: ['The Nauvoo', 'The Razorback', 'The Roci', 'Tycho'],
+      })
+      .expect(400)
+      .then((res) => {
+        expect(res.body.message).toContain('is missing from data.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
+      });
+    done();
+  });
 });

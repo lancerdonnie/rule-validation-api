@@ -1,11 +1,7 @@
-import app from '../index';
+import app from '../app.ts';
 import request from 'supertest';
 
 const agent = request(app);
-
-// afterEach(async () => {
-//   await app..close();
-// });
 
 describe('Home route works', () => {
   test('Home route github username starting with @', async (done) => {
