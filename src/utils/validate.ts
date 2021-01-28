@@ -1,6 +1,6 @@
-import type { TypedRequest, TypedResponse, IBody } from '../types';
+import type { TypedRequest, TypedResponse } from '../types';
 import Joi from 'joi';
-import { NextFunction, Response, Request } from 'express';
+import { NextFunction } from 'express';
 
 const options = {
   errors: {
@@ -12,10 +12,8 @@ const options = {
 
 const ruleSchema = Joi.object({
   field: Joi.string().allow('').required(),
-  condition: Joi.string()
-    .valid('eq', 'neq', 'gt', 'gte', 'contains')
-    .required(),
-  condition_value: Joi.string().allow('').required(),
+  condition: Joi.valid('eq', 'neq', 'gt', 'gte', 'contains').required(),
+  condition_value: Joi.required(),
 })
   .required()
   .messages({
@@ -25,14 +23,9 @@ const ruleSchema = Joi.object({
 
 const requestSchema = Joi.object({
   rule: ruleSchema,
-  data: [
-    Joi.string()
-      .allow('')
-      .required()
-      .messages({ 'any.required': '{{#label}} is required.' }),
-    Joi.array().required(),
-    Joi.object().required(),
-  ],
+  data: Joi.alternatives()
+    .try(Joi.string().allow(''), Joi.array(), Joi.object())
+    .required(),
 });
 
 export default (req: TypedRequest, res: TypedResponse, next: NextFunction) => {

@@ -2,7 +2,6 @@ import type { NextFunction, Request } from 'express';
 import type { TypedResponse } from './types';
 import express, { json } from 'express';
 import cors from 'cors';
-
 // controllers
 import rootController from './controllers/rootController';
 import validateController from './controllers/validateController';
@@ -10,6 +9,7 @@ import validateController from './controllers/validateController';
 const app = express();
 
 app.use(json());
+
 app.use((err: any, req: Request, res: TypedResponse, next: NextFunction) => {
   if (err) {
     return res.status(400).json({
@@ -20,6 +20,7 @@ app.use((err: any, req: Request, res: TypedResponse, next: NextFunction) => {
   }
   next();
 });
+
 app.use(
   cors({
     methods: ['GET', 'POST'],

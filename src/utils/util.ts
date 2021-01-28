@@ -7,5 +7,5 @@ export const conditions = {
   neq: (d: any, v: any) => d !== v,
   gt: (d: any, v: any) => d > v,
   gte: (d: any, v: any) => d >= v,
-  contains: (d: any[] | string, v: any) => d.includes(v),
+  contains: (d: any[] | string, v: any) => (d.includes ? d.includes(v) : false),
 };

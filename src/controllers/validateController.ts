@@ -55,52 +55,67 @@ router.post('/', validate, (req: TypedRequest, res: TypedResponse) => {
       },
     });
   } else if (typeof data === 'object') {
-    if (!data[nestedFields[0]])
-      return res.status(400).json({
-        message: `field ${nestedFields[0]} is missing from data.`,
-        status: 'error',
-        data: null,
-      });
-
-    if (nestedFields.length > 1 && !data[nestedFields[0]][nestedFields[1]])
-      return res.status(400).json({
-        message: `field ${field} is missing from data.`,
-        status: 'error',
-        data: null,
-      });
-
-    if (
-      condition === 'contains' ||
-      !conditions[condition](field, condition_value)
-    ) {
-      return res.status(400).json({
-        message: `field ${field} failed validation.`,
-        status: 'error',
+    const nest1 = data[nestedFields[0]]?.[nestedFields[1]];
+    const nest2 = data[nestedFields[0]];
+    if (nest1 !== undefined) {
+      if (!conditions[condition](nest1, condition_value)) {
+        return res.status(400).json({
+          message: `field ${field} failed validation.`,
+          status: 'error',
+          data: {
+            validation: {
+              error: true,
+              field: field,
+              field_value: nest1,
+              condition: condition,
+              condition_value: condition_value,
+            },
+          },
+        });
+      }
+      return res.json({
+        message: `field ${field} successfully validated.`,
+        status: 'success',
         data: {
           validation: {
-            error: true,
+            error: false,
             field: field,
-            field_value: '',
+            field_value: nest1,
+            condition: condition,
+            condition_value: condition_value,
+          },
+        },
+      });
+    } else {
+      if (!conditions[condition](nest2, condition_value)) {
+        return res.status(400).json({
+          message: `field ${nestedFields[0]} failed validation.`,
+          status: 'error',
+          data: {
+            validation: {
+              error: true,
+              field: field,
+              field_value: nest2,
+              condition: condition,
+              condition_value: condition_value,
+            },
+          },
+        });
+      }
+      return res.json({
+        message: `field ${field} successfully validated.`,
+        status: 'success',
+        data: {
+          validation: {
+            error: false,
+            field: field,
+            field_value: nest2,
             condition: condition,
             condition_value: condition_value,
           },
         },
       });
     }
-
-    return res.json({
-      message: `field ${field} successfully validated.`,
-      status: 'success',
-      data: {
-        validation: {
-          error: false,
-          field: field,
-          field_value: '',
-          condition: condition,
-          condition_value: condition_value,
-        },
-      },
-    });
   } else {
     if (nestedFields.length > 1) {
       return res.status(400).json({
