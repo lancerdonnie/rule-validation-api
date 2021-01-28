@@ -22,5 +22,5 @@ A simple rule-validation API
 
 #### Live Url
 
-Url: [Rule Validation Api](https://itap-ims.herokuapp.com/)
+Url: [Rule Validation Api](https://rulevalidationproject.herokuapp.com/)
 Instructions: [Instructions](https://flwat.glitch.me/fulltime.html)
