@@ -1,6 +1,6 @@
 import agent from './app.test';
 
-describe('Validation errors', () => {
+describe('Main Validation errors', () => {
   test('empty object gives error', async (done) => {
     await agent
       .post('/validate-rule')
@@ -8,6 +8,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('is required.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });
@@ -19,6 +21,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('rule is required.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });
@@ -30,6 +34,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('data is required.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });
@@ -41,6 +47,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('data must be one of');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });
@@ -52,6 +60,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('rule should be an object.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });
@@ -63,6 +73,8 @@ describe('Validation errors', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.message).toContain('rule.');
+        expect(res.body.status).toBe('error');
+        expect(res.body.data).toBe(null);
       });
     done();
   });

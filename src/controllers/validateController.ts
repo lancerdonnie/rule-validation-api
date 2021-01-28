@@ -55,7 +55,9 @@ router.post('/', validate, (req: TypedRequest, res: TypedResponse) => {
         },
       },
     });
-  } else if (typeof data === 'object') {
+  }
+
+  if (typeof data === 'object') {
     const nest1 = data[nestedFields[0]]?.[nestedFields[1]];
     const nest2 = data[nestedFields[0]];
 
