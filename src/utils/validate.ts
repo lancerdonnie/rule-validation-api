@@ -11,9 +11,14 @@ const options = {
 };
 
 const ruleSchema = Joi.object({
-  field: Joi.string().allow('').required(),
+  field: Joi.string().allow('').required().messages({
+    'string.base': '{{#label}} should be a string.',
+    'any.required': '{{#label}} is required.',
+  }),
   condition: Joi.valid('eq', 'neq', 'gt', 'gte', 'contains').required(),
-  condition_value: Joi.required(),
+  condition_value: Joi.required().messages({
+    'any.required': '{{#label}} is required.',
+  }),
 })
   .required()
   .messages({
@@ -22,10 +27,13 @@ const ruleSchema = Joi.object({
   });
 
 const requestSchema = Joi.object({
-  rule: ruleSchema,
   data: Joi.alternatives()
     .try(Joi.string().allow(''), Joi.array(), Joi.object())
-    .required(),
+    .required()
+    .messages({
+      'any.required': '{{#label}} is required.',
+    }),
+  rule: ruleSchema,
 });
 
 export default (req: TypedRequest, res: TypedResponse, next: NextFunction) => {

@@ -1,4 +1,5 @@
 import type { TypedRequest, TypedResponse } from '../types';
+
 import { Router } from 'express';
 import validate from '../utils/validate';
 import { conditions, splitMax } from '../utils/util';
@@ -57,6 +58,17 @@ router.post('/', validate, (req: TypedRequest, res: TypedResponse) => {
   } else if (typeof data === 'object') {
     const nest1 = data[nestedFields[0]]?.[nestedFields[1]];
     const nest2 = data[nestedFields[0]];
+
+    if (
+      (nestedFields.length > 1 && nest1 === undefined) ||
+      (nestedFields.length === 1 && nest2 === undefined)
+    )
+      return res.status(400).json({
+        message: `field ${field} is missing from data.`,
+        status: 'error',
+        data: null,
+      });
+
     if (nest1 !== undefined) {
       if (!conditions[condition](nest1, condition_value)) {
         return res.status(400).json({

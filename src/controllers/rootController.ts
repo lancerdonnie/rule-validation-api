@@ -1,5 +1,6 @@
 import type { Request } from 'express';
 import type { TypedResponse } from '../types';
+
 import { Router } from 'express';
 
 const router = Router();
